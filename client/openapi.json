@@ -1,0 +1,337 @@
+{
+  "components": {
+    "schemas": {
+      "Offer": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "prerelease": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "page": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "asset": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version",
+          "tag",
+          "name",
+          "prerelease",
+          "published",
+          "page",
+          "notes",
+          "asset",
+          "size"
+        ]
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "default_channel": {
+            "type": "string",
+            "enum": [
+              "stable",
+              "beta"
+            ]
+          },
+          "checked": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When GitHub was last read. Absent before the first read."
+          },
+          "error": {
+            "type": "string",
+            "description": "Why the last read of GitHub failed. Absent when it succeeded."
+          },
+          "channels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "beta"
+              ]
+            },
+            "description": "The channel chosen for a printer, by device id. A printer not named follows default_channel."
+          },
+          "models": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "stable": {
+                  "$ref": "#/components/schemas/Offer"
+                },
+                "beta": {
+                  "$ref": "#/components/schemas/Offer"
+                }
+              },
+              "required": [
+                "stable",
+                "beta"
+              ]
+            },
+            "description": "The newest firmware per model asked for. beta is the newest of all releases, so it equals stable while no pre-release is newer."
+          },
+          "storage": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "default_channel",
+          "channels",
+          "models",
+          "storage"
+        ]
+      },
+      "ChannelChange": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "",
+              "stable",
+              "beta"
+            ],
+            "description": "Empty goes back to the default channel."
+          }
+        },
+        "required": [
+          "channel"
+        ]
+      },
+      "ChannelSet": {
+        "type": "object",
+        "properties": {
+          "device": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device",
+          "channel"
+        ]
+      },
+      "Refreshed": {
+        "type": "object",
+        "properties": {
+          "checked": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "checked"
+        ]
+      },
+      "StageRequest": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "The model as the device record spells it, such as MK4S."
+          },
+          "tag": {
+            "type": "string",
+            "description": "The release tag, such as v8.0.2."
+          }
+        },
+        "required": [
+          "model",
+          "tag"
+        ]
+      },
+      "Staged": {
+        "type": "object",
+        "properties": {
+          "storage": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "printer_file": {
+            "type": "string",
+            "description": "The 8.3 name to give the file on the printer's USB drive."
+          },
+          "built_for": {
+            "type": "string",
+            "description": "The printer code the file's header names, such as 1.4.0."
+          }
+        },
+        "required": [
+          "storage",
+          "path",
+          "size",
+          "sha256",
+          "version",
+          "printer_file",
+          "built_for"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "prusa-connect-firmware-updates",
+    "version": "0.1.0",
+    "description": "Firmware update check for Prusa printers. Every path is relative to the module's mount."
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/devices/{id}/channel": {
+      "put": {
+        "operationId": "set-firmware-channel",
+        "summary": "Choose the channel of one printer",
+        "description": "Sets the channel one printer follows: stable, beta, or empty for the module's default. The host takes operate_resource.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The device id.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelChange"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelSet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/refresh": {
+      "post": {
+        "operationId": "refresh-firmware-releases",
+        "summary": "Read GitHub now",
+        "description": "Reads the firmware releases from GitHub now. A second read within 30 seconds answers the first one. The host takes operate_resource.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Refreshed"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/stage": {
+      "post": {
+        "operationId": "stage-firmware",
+        "summary": "Download one firmware into a storage",
+        "description": "Downloads the image of one release for one model, holds it to GitHub's size and SHA-256 and to the printer code and version in its own header, and writes it into the module's storage so it can be sent to a printer. It installs nothing. The host takes operate_resource.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Staged"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/status": {
+      "get": {
+        "operationId": "read-firmware-status",
+        "summary": "Offers, channels and the last check",
+        "description": "The newest stable and beta firmware for each model named in models, the channel of each printer, and when GitHub was last read. The host takes view_resource on the module's instance before this is called.",
+        "parameters": [
+          {
+            "name": "models",
+            "in": "query",
+            "required": false,
+            "description": "Printer models, comma separated, as the device record spells them.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

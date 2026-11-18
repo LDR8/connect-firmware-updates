@@ -1,0 +1,86 @@
+# The manifest of Firmware Updates: the Go process (main.go and the files
+# beside it) and the browser bundle under ui/.
+#
+# The namespace is absent on purpose. The host derives it from the module path
+# in go.mod.
+name: firmware-updates
+kind: sink
+version: 0.1.0
+license: MIT
+title: Firmware Updates
+summary: Checks GitHub for new Prusa Buddy firmware for every printer, on the stable or the beta channel you choose per printer. It installs only when you press the button and confirm.
+codeowner: ldr8
+contract_major: 1
+openapi: openapi.json
+
+platforms:
+  - linux_amd64
+  - linux_arm64
+  - darwin_amd64
+  - darwin_arm64
+  - windows_amd64
+  - windows_arm64
+
+require:
+  core: ">=0.1.0-beta.1"
+
+# Every setting this module reads. An operator edits them under
+# Settings, Extensions, Firmware Updates, on the Settings tab.
+options:
+  - key: default_channel
+    type: string
+    default: "stable"
+    summary: "The channel a printer follows unless you choose another one for it: stable, or beta for pre-releases (alpha, beta, release candidates)."
+  - key: mini_language
+    type: string
+    default: "german"
+    summary: "Every MINI firmware image holds English and one more language. This picks the second one: czech, french, german, italian, japanese, polish, spanish or ukrainian."
+  - key: check_hours
+    type: int
+    default: "6"
+    summary: How often, in hours, the firmware releases are read from GitHub.
+  - key: storage
+    type: string
+    default: "local"
+    summary: The storage of this server a firmware image is downloaded into before it is sent to a printer.
+  - key: github_token
+    type: secret
+    default: ""
+    summary: Optional. A GitHub token, only needed when 60 requests an hour from this server are not enough.
+
+needs:
+  memory_mib: 64
+  # Keeps the release list and the channel chosen for each printer.
+  data: true
+
+# A firmware image is written into a storage of this server, so it can be
+# sent to the printer from there. Sending it and starting the flash are done
+# by the browser half as the person who pressed the button.
+permissions:
+  - write_storage
+
+# Every connection the process makes outside Prusa Connect.
+egress:
+  - host: api.github.com
+    why: Reads the list of Prusa-Firmware-Buddy releases every few hours.
+    sends: The request, and the github_token setting when one is set.
+  - host: github.com
+    why: Downloads a firmware image when a person asks for it.
+    sends: Only the request for the file.
+  - host: "*.githubusercontent.com"
+    why: GitHub serves the release files from there after a redirect.
+    sends: Only the request for the file.
+
+ui:
+  entry: ui/index.js
+  library: ">=0.0.1 <1.0.0"
+  contributes:
+    pages:
+      - path: firmware-updates
+        title: Firmware Updates
+    device_card:
+      - id: firmware-updates
+        title: Firmware Updates
+    device_section:
+      - id: firmware-updates
+        title: Firmware Updates
