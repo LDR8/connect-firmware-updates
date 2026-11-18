@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "prusa-connect-firmware-updates",
+    "title": "connect-firmware-updates",
     "version": "0.1.0",
     "description": "Firmware update check for Prusa printers. Every path is relative to the module's mount."
   },

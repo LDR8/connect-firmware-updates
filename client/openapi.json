@@ -209,13 +209,13 @@
     }
   },
   "info": {
-    "title": "prusa-connect-firmware-updates",
+    "title": "connect-firmware-updates",
     "version": "0.1.0",
     "description": "Firmware update check for Prusa printers. Every path is relative to the module's mount."
   },
   "openapi": "3.1.0",
   "paths": {
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/devices/{id}/channel": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/devices/{id}/channel": {
       "put": {
         "operationId": "set-firmware-channel",
         "summary": "Choose the channel of one printer",
@@ -255,7 +255,7 @@
         }
       }
     },
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/refresh": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/refresh": {
       "post": {
         "operationId": "refresh-firmware-releases",
         "summary": "Read GitHub now",
@@ -274,7 +274,7 @@
         }
       }
     },
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/stage": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/stage": {
       "post": {
         "operationId": "stage-firmware",
         "summary": "Download one firmware into a storage",
@@ -303,7 +303,7 @@
         }
       }
     },
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/status": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/status": {
       "get": {
         "operationId": "read-firmware-status",
         "summary": "Offers, channels and the last check",

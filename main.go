@@ -14,7 +14,7 @@
 //	POST /refresh                 read GitHub now
 //	POST /stage                   {"model", "tag"}: download the image into a storage of this server
 //
-// Paths are relative to /api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates.
+// Paths are relative to /api/v1/modules/com.github.aux.ldr8.connect-firmware-updates.
 package main
 
 import (

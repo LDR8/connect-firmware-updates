@@ -1,4 +1,4 @@
-module github.com/ldr8/prusa-connect-firmware-updates
+module github.com/ldr8/connect-firmware-updates
 
 go 1.26.11
 

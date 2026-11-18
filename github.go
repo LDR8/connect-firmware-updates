@@ -66,7 +66,7 @@ type githubRelease struct {
 //nolint:gochecknoglobals // shared, safe for concurrent use.
 var httpClient = &http.Client{Timeout: 2 * time.Minute}
 
-const userAgent = "prusa-connect-firmware-updates/" + string(release)
+const userAgent = "connect-firmware-updates/" + string(release)
 
 // fetchReleases reads the release list from GitHub.
 func fetchReleases(ctx context.Context, token string) ([]Release, error) {

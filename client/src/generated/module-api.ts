@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/devices/{id}/channel": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/devices/{id}/channel": {
         parameters: {
             query?: never;
             header?: never;
@@ -24,7 +24,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/refresh": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/refresh": {
         parameters: {
             query?: never;
             header?: never;
@@ -44,7 +44,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/stage": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/stage": {
         parameters: {
             query?: never;
             header?: never;
@@ -64,7 +64,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/modules/com.github.aux.ldr8.prusa-connect-firmware-updates/status": {
+    "/api/v1/modules/com.github.aux.ldr8.connect-firmware-updates/status": {
         parameters: {
             query?: never;
             header?: never;
