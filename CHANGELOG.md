@@ -10,6 +10,9 @@ first. `version:` in `module.yaml` is the newest heading below.
 - A printer whose model is spelled in another case than expected, such as a CORE One reporting
   `COREONE`, can now copy its update to the printer. Before, the update was offered, but the
   image check refused it as an unknown model.
+- A CORE One INDX that Prusa Connect reports as `COREONEINDX`, without the underscore, is offered
+  its INDX firmware. Before, no update was offered at all. A model is now recognized in every
+  spelling Prusa Connect accepts for it.
 
 ## 0.1.0 - 2026-11-18
 

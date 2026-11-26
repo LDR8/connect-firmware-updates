@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-var verifyModels = []string{"CoreOne", "CoreOne_INDX", "CoreOneL", "CoreOneL_INDX", "IX", "MINI", "MK3.5", "MK3.5S", "MK3.9", "MK3.9S", "MK4", "MK4S", "XL"}
+var verifyModels = []string{"CoreOne", "CoreOne_INDX", "COREONEINDX", "CoreOneL", "CoreOneL_INDX", "COREONELINDX", "IX", "MINI", "MK3.5", "MK3.5S", "MK3.9", "MK3.9S", "MK4", "MK4S", "XL"}
 
 func TestVerifyLive(t *testing.T) {
 	if os.Getenv("VERIFY") == "" {
