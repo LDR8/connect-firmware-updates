@@ -3,6 +3,8 @@ package main
 import (
 	"regexp"
 	"strings"
+
+	"github.com/prusa3d/prusa-connect/sdk/connectorapi"
 )
 
 // The part of an asset name before "_firmware" or "-firmware" lists the
@@ -55,15 +57,20 @@ func assetTokens(asset string) (tokens []string, language string, ok bool) {
 	return tokens, language, len(tokens) > 0
 }
 
-// modelToken is the token a printer model is listed under, and whether the
-// model is a tool changer (INDX), whose firmware is a separate image.
+// modelToken is the token a printer model is listed under, folded, and whether
+// the model is a tool changer (INDX), whose firmware is a separate image.
+//
+// The device record keeps the printer's own spelling of its model: CoreOne_INDX,
+// COREONE_INDX and COREONEINDX are one machine. Models are therefore compared
+// folded, by the rule the host matches them with, and checkImage looks a model
+// up the same way.
 func modelToken(model string) (token string, indx bool) {
-	upper := strings.ToUpper(strings.TrimSpace(model))
-	if base, found := strings.CutSuffix(upper, "_INDX"); found {
+	folded := connectorapi.FoldModel(model)
+	if base, found := strings.CutSuffix(folded, "indx"); found && base != "" {
 		return base, true
 	}
 
-	return upper, false
+	return folded, false
 }
 
 // assetFits reports whether the asset is the firmware image for this model.
@@ -82,10 +89,10 @@ func assetFits(asset, model, language string) bool {
 	named, hasIndx := false, false
 
 	for _, token := range tokens {
-		switch token {
+		switch connectorapi.FoldModel(token) {
 		case want:
 			named = true
-		case "INDX":
+		case "indx":
 			hasIndx = true
 		}
 	}

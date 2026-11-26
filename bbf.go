@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/prusa3d/prusa-connect/sdk/connectorapi"
 )
 
 // The header of a Buddy firmware file (.bbf), as Prusa's utils/unpack_bbf.py
@@ -77,13 +79,12 @@ func parseBBF(b []byte) (BBFHeader, error) {
 	return h, nil
 }
 
-// headerCodes is, per model in upper case, the printer codes a firmware file
-// for it may carry. The device record keeps the printer's own spelling
-// (CoreOne, COREONE, ...), so a model is looked up in upper case, as
-// assetFits compares it. A file serving several models is built
-// for one of them: the MK4/MK4S/MK3.9/MK3.9S file says 1.4.0, the MK3.5/MK3.5S
-// file 1.3.5. Each model's own code is accepted too, in case Prusa splits a
-// file. A model not listed here is offered no installation at all.
+// headerCodes is, per model as the host names it, the printer codes a
+// firmware file for it may carry. A model is looked up by codesFor, folded as
+// modelToken compares it. A file serving several models is built for one of
+// them: the MK4/MK4S/MK3.9/MK3.9S file says 1.4.0, the MK3.5/MK3.5S file
+// 1.3.5. Each model's own code is accepted too, in case Prusa splits a file. A
+// model not listed here is offered no installation at all.
 //
 //nolint:gochecknoglobals // a fixed table.
 var headerCodes = map[string][]string{
@@ -96,10 +97,23 @@ var headerCodes = map[string][]string{
 	"MINI":          {"2.1.0"},
 	"XL":            {"3.1.0"},
 	"IX":            {"4.1.0"},
-	"COREONE":       {"7.1.0"},
-	"COREONE_INDX":  {"7.10.0"},
-	"COREONEL":      {"8.1.0"},
-	"COREONEL_INDX": {"8.10.0"},
+	"CoreOne":       {"7.1.0"},
+	"CoreOne_INDX":  {"7.10.0"},
+	"CoreOneL":      {"8.1.0"},
+	"CoreOneL_INDX": {"8.10.0"},
+}
+
+// codesFor answers the printer codes of a model in any spelling the host
+// takes for it.
+func codesFor(model string) ([]string, bool) {
+	folded := connectorapi.FoldModel(model)
+	for name, codes := range headerCodes {
+		if connectorapi.FoldModel(name) == folded {
+			return codes, true
+		}
+	}
+
+	return nil, false
 }
 
 // checkImage refuses a firmware file whose header names another printer or
@@ -110,7 +124,7 @@ func checkImage(image []byte, model, version string) (BBFHeader, error) {
 		return h, err
 	}
 
-	allowed, known := headerCodes[strings.ToUpper(strings.TrimSpace(model))]
+	allowed, known := codesFor(model)
 	if !known {
 		return h, fmt.Errorf("no printer code is known for the model %s, so its firmware is not checked and not offered", model)
 	}
