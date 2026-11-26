@@ -3,6 +3,14 @@
 What an operator sees change when they upgrade this module, newest release
 first. `version:` in `module.yaml` is the newest heading below.
 
+## Unreleased
+
+### Fixed
+
+- A printer whose model is spelled in another case than expected, such as a CORE One reporting
+  `COREONE`, can now copy its update to the printer. Before, the update was offered, but the
+  image check refused it as an unknown model.
+
 ## 0.1.0 - 2026-11-18
 
 ### Added
