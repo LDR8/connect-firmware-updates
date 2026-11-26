@@ -96,6 +96,9 @@ func TestImageCheck(t *testing.T) {
 	if _, err := checkImage(fakeBBF(8, 0, 2, 1, 3, 5), "MK4S", "8.0.2"); err == nil {
 		t.Error("MK3.5 file accepted for MK4S")
 	}
+	if _, err := checkImage(fakeBBF(8, 0, 2, 7, 1, 0), "COREONE", "8.0.2"); err != nil {
+		t.Errorf("CoreOne file refused for a printer reporting COREONE: %v", err)
+	}
 	if _, err := checkImage(fakeBBF(8, 0, 2, 7, 10, 0), "CoreOne", "8.0.2"); err == nil {
 		t.Error("INDX file accepted for CoreOne")
 	}
